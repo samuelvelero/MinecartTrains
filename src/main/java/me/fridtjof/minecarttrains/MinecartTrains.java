@@ -4,7 +4,6 @@ import me.fridtjof.minecarttrains.managers.ConfigManager;
 import me.fridtjof.minecarttrains.managers.EventManager;
 import me.fridtjof.minecarttrains.managers.LinkageManager;
 import me.fridtjof.minecarttrains.managers.RecipeManager;
-import me.fridtjof.puddingapi.bukkit.utils.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MinecartTrains extends JavaPlugin
@@ -22,24 +21,18 @@ public final class MinecartTrains extends JavaPlugin
         return instance;
     }
 
-    Logger logger = new Logger(this);
-
     public ConfigManager configManager;
     public LinkageManager linkageManager;
 
     @Override
     public void onEnable()
     {
-        new PuddingAPIVersionChecker(this, 2602011954L);
-
+        // ERDM fork: PuddingAPI, update checker and bStats removed (single jar, no outbound calls)
         configManager = new ConfigManager(this);
         linkageManager = new LinkageManager();
 
         new RecipeManager();
         new EventManager(this);
-        new ModrinthUpdateChecker(this,"plRff0I9", "spigot");
-        new Metrics(this, 18918);
-
     }
 
     @Override

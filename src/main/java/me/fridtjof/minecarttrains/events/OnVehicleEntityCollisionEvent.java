@@ -17,6 +17,7 @@ public class OnVehicleEntityCollisionEvent implements Listener
     boolean runOver = plugin.configManager.mainConfig.getConfig().getBoolean("trains.run_over.entities");
     double damage = plugin.configManager.mainConfig.getConfig().getDouble("trains.run_over.damage");
     double minVelocity = plugin.configManager.mainConfig.getConfig().getDouble("trains.run_over.min_velocity");
+    boolean runOverPlayers = plugin.configManager.mainConfig.getConfig().getBoolean("trains.run_over.players");
 
     // killing entities when run over
     @EventHandler
@@ -36,6 +37,10 @@ public class OnVehicleEntityCollisionEvent implements Listener
             return;
         }
         if(entity instanceof Minecart)
+        {
+            return;
+        }
+        if(!runOverPlayers && entity instanceof Player)
         {
             return;
         }

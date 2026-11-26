@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group = 'me.fridtjof'
+version = project.pluginVersion
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:${project.paperApiVersion}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.javaVersion as Integer)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:all,-serial,-processing,-deprecation'
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+    def props = [version: project.version]
+    inputs.properties(props)
+    filesMatching('plugin.yml') {
+        expand(props)
+    }
+}
+
+jar {
+    archiveBaseName = 'ERDM_MinecartTrains'
+    archiveClassifier = ''
+}

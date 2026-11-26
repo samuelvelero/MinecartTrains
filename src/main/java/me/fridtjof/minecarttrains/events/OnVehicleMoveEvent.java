@@ -1,17 +1,18 @@
 package me.fridtjof.minecarttrains.events;
 
 import me.fridtjof.minecarttrains.MinecartTrains;
+import me.fridtjof.minecarttrains.managers.CopperTracks;
 import me.fridtjof.minecarttrains.managers.LinkageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.util.Vector;
 
 public class OnVehicleMoveEvent implements Listener {
 
@@ -19,10 +20,9 @@ public class OnVehicleMoveEvent implements Listener {
     static MinecartTrains plugin = MinecartTrains.getInstance();
     LinkageManager linkageManager = plugin.linkageManager;
 
-    double defaultSpeed = 0.4;
+    double defaultSpeed = CopperTracks.VANILLA_MAX_SPEED;
     boolean doHighSpeed = plugin.configManager.mainConfig.getConfig().getBoolean("tracks.high_speed_tracks.enable");
-    Material highSpeedBlock = Material.getMaterial(plugin.configManager.mainConfig.getConfig().getString("tracks.high_speed_tracks.bed_block"));
-    double maxHighSpeedSpeed = plugin.configManager.physicsConfig.getConfig().getDouble("track.high_speed.max_speed");
+    CopperTracks copperTracks = new CopperTracks(plugin.configManager.mainConfig.getConfig());
     double acceleration = plugin.configManager.physicsConfig.getConfig().getDouble("track.high_speed.acceleration");
 
     @EventHandler
@@ -34,20 +34,22 @@ public class OnVehicleMoveEvent implements Listener {
         }
 
         // only continue if vehicle is a minecart
-        if(!(event.getVehicle() instanceof Minecart))
+        if(!(event.getVehicle() instanceof Minecart minecart))
         {
             return;
         }
 
-        Minecart minecart = (Minecart) event.getVehicle();
         World world = minecart.getWorld();
         Location location = minecart.getLocation();
 
+        // linked carts copy the speed limit of the cart they follow
         if(linkageManager.hasLink(minecart))
         {
-            Minecart parent = (Minecart) Bukkit.getEntity(linkageManager.getLinkUniqueId(minecart));
-
-            minecart.setMaxSpeed(parent.getMaxSpeed());
+            Entity parent = Bukkit.getEntity(linkageManager.getLinkUniqueId(minecart));
+            if(parent instanceof Minecart parentCart)
+            {
+                minecart.setMaxSpeed(parentCart.getMaxSpeed());
+            }
             return;
         }
 
@@ -56,9 +58,12 @@ public class OnVehicleMoveEvent implements Listener {
 
         if(track.getType() != Material.POWERED_RAIL)
         {
+            // keep the momentum on normal rails between boosters
             return;
         }
-        if(bed.getType() != highSpeedBlock)
+
+        double targetSpeed = copperTracks.maxSpeedFor(bed.getType());
+        if(targetSpeed < 0)
         {
             minecart.setMaxSpeed(defaultSpeed);
             return;
@@ -66,14 +71,14 @@ public class OnVehicleMoveEvent implements Listener {
 
         double currentMaxSpeed = minecart.getMaxSpeed();
 
-        if(currentMaxSpeed < maxHighSpeedSpeed)
+        if(currentMaxSpeed < targetSpeed)
         {
-            //minecart.setMaxSpeed(currentMaxSpeed * acceleration);
-            minecart.setMaxSpeed(currentMaxSpeed + acceleration);
+            minecart.setMaxSpeed(Math.min(targetSpeed, currentMaxSpeed + acceleration));
         }
-        if(currentMaxSpeed > maxHighSpeedSpeed)
+        else if(currentMaxSpeed > targetSpeed)
         {
-            minecart.setMaxSpeed(maxHighSpeedSpeed);
+            // slower copper stage: drop to its limit right away
+            minecart.setMaxSpeed(targetSpeed);
         }
     }
 }

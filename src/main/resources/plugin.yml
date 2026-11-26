@@ -1,7 +1,7 @@
-name: MinecartTrains
-version: '${project.version}'
+name: ERDM_MinecartTrains
+version: '${version}'
 main: me.fridtjof.minecarttrains.MinecartTrains
 api-version: '1.21'
-authors: [ Fridtjof_DE ]
-website: https://www.fridtjof.me
-depend: [PuddingAPI]
+authors: [ Fridtjof_DE, ERDM ]
+website: https://github.com/samuelvelero/MinecartTrains
+description: Trenes de minecarts y vias rapidas con bloques de cobre bajo los powered rails (fork ERDM de MinecartTrains).

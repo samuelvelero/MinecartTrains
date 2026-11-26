@@ -1,7 +1,7 @@
 package me.fridtjof.minecarttrains.events;
 
 import me.fridtjof.minecarttrains.MinecartTrains;
-import me.fridtjof.puddingapi.bukkit.items.HopperUtils;
+import me.fridtjof.minecarttrains.utils.HopperUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.minecart.StorageMinecart;
