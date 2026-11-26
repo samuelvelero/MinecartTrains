@@ -58,4 +58,44 @@ public enum CopperStage
         Set<String> shapes = stage == UNAFFECTED ? FRESH_SHAPES : AGED_SHAPES;
         return shapes.contains(name) ? stage : null;
     }
+
+    /** Result of scraping a copper block with an axe, like vanilla. */
+    public record Scrape(String result, boolean waxRemoved)
+    {
+    }
+
+    /**
+     * Vanilla axe behaviour on a copper track bed: a waxed block loses its wax first,
+     * otherwise it goes back one oxidation stage.
+     * @return the new material name, or null if there is nothing to scrape.
+     */
+    public static Scrape scrape(String materialName)
+    {
+        CopperStage stage = of(materialName, true);
+        if(stage == null)
+        {
+            return null;
+        }
+        if(materialName.startsWith("WAXED_"))
+        {
+            return new Scrape(materialName.substring("WAXED_".length()), true);
+        }
+        if(stage == UNAFFECTED)
+        {
+            return null;
+        }
+
+        String shape = materialName.substring(stage.name().length() + 1);
+        CopperStage previous = values()[stage.ordinal() - 1];
+        String result;
+        if(previous == UNAFFECTED)
+        {
+            result = shape.equals("COPPER") ? "COPPER_BLOCK" : shape;
+        }
+        else
+        {
+            result = previous.name() + "_" + shape;
+        }
+        return new Scrape(result, false);
+    }
 }

@@ -110,6 +110,7 @@ public class ConfigManager
             mainConfig.getConfig().addDefault("tracks.high_speed_tracks.copper_speed_multiplier." + stage.key, stage.defaultMultiplier);
         }
         mainConfig.getConfig().addDefault("tracks.high_speed_tracks.waxed_copper_counts", true);
+        mainConfig.getConfig().addDefault("tracks.high_speed_tracks.axe_scrapes_copper_through_rail", true);
 
         mainConfig.getConfig().options().copyDefaults(true);
         mainConfig.save();

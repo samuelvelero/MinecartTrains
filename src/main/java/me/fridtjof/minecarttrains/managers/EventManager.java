@@ -24,6 +24,7 @@ public class EventManager implements Listener
         getServer().getPluginManager().registerEvents((Listener) new OnVehicleCreateEvent(), plugin);
         getServer().getPluginManager().registerEvents((Listener) new OnInventoryMoveItemEvent(), plugin);
         getServer().getPluginManager().registerEvents((Listener) new OnVehicleMoveEvent(), plugin);
+        getServer().getPluginManager().registerEvents((Listener) new OnRailAxeScrapeEvent(), plugin);
     }
 
 }
